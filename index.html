@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Carmarket Whitelabel Integration Test Environment</title>
+    <style>
+        :root {
+            --drawer-width: 400px;
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            font-size: 18px;
+        }
+        h1 {
+            margin: 0;
+        }
+        ul {
+            list-style: none;
+        }
+        .header {
+            /* box shadow to bottom */
+            box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+            padding: 8px 24px;
+            margin: 0 0 24px 0;
+            position: sticky;
+            top: 0;
+            background: white;
+        }
+        .page-container {
+            display: flex;
+            flex-direction: row;
+        }
+        .page-content {
+            /*flex grow*/
+            flex: 1;
+        }
+        .toggle {
+            font-size: 32px;
+        }
+        #nav-toggle {
+            display: none;
+        }
+        .drawer {
+            width: 0;
+            overflow: hidden;
+            /* width transitions are not advised but fine for demo purpose */
+            transition: width 0.2s ease-in-out;
+        }
+        .nav-list {
+            --vertical-padding: 24px;
+            padding: 8px var(--vertical-padding);
+            width: calc(var(--drawer-width) - var(--vertical-padding));
+        }
+        #nav-toggle:checked ~ .drawer {
+            width: var(--drawer-width);
+        }
+        #carmarket-frame iframe {
+            scroll-margin-top: 200px;
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+    <h1 class="h1">Test Garage</h1>
+</header>
+<div class="page-container">
+    <nav>
+        <label
+            class="toggle"
+            for="nav-toggle"
+        >&#9776;</label
+        >
+        <input type="checkbox" id="nav-toggle" />
+        <div class="drawer">
+            <div class="nav-list">
+                <h2>Whitelabel Configuration</h2>
+                <p>A page reload is automatically done to apply configuration changes.</p>
+                <form method="GET" id="instance-configuration">
+                    <h3>Language</h3>
+                    <label><input type="radio" name="language" value="de">Deutsch</label><br>
+                    <label><input type="radio" name="language" value="fr">Französisch</label><br>
+                    <label><input type="radio" name="language" value="it">Italienisch</label><br>
+                    <h3>Type</h3>
+                    <label><input type="radio" name="type" value="whitelabel">Whitelabel</label><br>
+                    <label><input type="radio" name="type" value="banner">Banner</label>
+                </form>
+                <p>This is implemented as a sidebar to ensure CarmarketFrame can handle implicit resizing of the container.</p>
+            </div>
+        </div>
+    </nav>
+    <!-- root for carmarket frame -->
+    <main class="page-content" id="carmarket-frame"></main>
+</div>
+<script>
+    const searchParams = new URLSearchParams(window.location.search);
+    window.carmarketFrameConfiguration = searchParams.get("type") === "banner" ? {
+        type: "banner",
+        selector: "#carmarket-frame",
+        id: "cloeenb87gtl20bup2wd3l5mh",
+        language: searchParams.get("language") || "de",
+    }:
+    {
+        selector: "#carmarket-frame",
+
+        id: "clbqe36c81am40aw2h0b2i9wz",
+        language: searchParams.get("language") || "de",
+        dealerIds: [600, 589],
+        sidebarFilters: ["vehicleCondition", "price", "mileage"], // optional
+        excludedFilters: ["interiorColor", "exteriorColor"], // optional
+        brandIds: [1, 4, 7, 19], // optional
+
+        searchPlaceholder: "z.B. Ford",
+
+        themePageBackground: "#ffffff",
+        themePageForeground: "#1E1E1E",
+
+        themePrimary: "#2A5CAA",
+        themePrimaryHover: "#000000",
+        themeOnPrimary: "#ffffff",
+
+        themeSecondary: "#6E7681",
+        themeSecondaryHover: "#000000",
+        themeOnSecondary: "#ffffff",
+
+        themeBoxBackground: "#F0F3F7",
+        themeBorder: "#999999",
+        themeMeta: "#999999",
+    }
+</script>
+<script type="module" src="https://staging-whitelabel.carmarket.ch/v1/carmarket.js"></script>
+<script>
+    const form = document.getElementById("instance-configuration")
+    document.getElementById("instance-configuration").addEventListener("change", () => {
+        form.submit();
+    });
+
+    const types = document.querySelectorAll("#instance-configuration [name='type']");
+    const setType = searchParams.get("type");
+
+    types.forEach(type => {
+        if(type.value === setType) {
+            type.checked = true;
+        }
+    })
+
+    const languages = document.querySelectorAll("#instance-configuration [name='language']");
+    const setLanguage = searchParams.get("language");
+
+    languages.forEach(language => {
+        if(language.value === setLanguage) {
+            language.checked = true;
+        }
+    })
+</script>
+</body>
+</html>
